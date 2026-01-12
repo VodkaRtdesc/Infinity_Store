@@ -1,79 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Pagamento Pix • Multi Craft</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #1e1e1e;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
-    .box {
-      max-width: 500px;
-      margin: 50px auto;
-      background: #2b2b2b;
-      padding: 25px;
-      border-radius: 10px;
-      text-align: center;
-    }
-    .pix {
-      background: #111;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 15px 0;
-      word-break: break-all;
-      font-size: 14px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #00aa55;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #008844;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Pagamento Pix • Multi Craft</title>
+<style>
+body{font-family:Arial;background:#1e1e1e;color:#fff;margin:0}
+.box{max-width:500px;margin:50px auto;background:#2b2b2b;padding:25px;border-radius:10px;text-align:center}
+.pix{background:#111;padding:15px;border-radius:8px;margin:15px 0;word-break:break-all}
+.success{color:#00ff88;font-size:20px}
+</style>
 </head>
+
 <body>
 
-<div class="box">
+<div class="box" id="paymentBox">
   <h2>Pagamento via Pix</h2>
-  <p><strong>Servidor:</strong> Multi Craft</p>
-
   <p id="item"></p>
   <p id="nick"></p>
 
   <h3>Chave Pix</h3>
   <div class="pix" id="pixKey"></div>
 
-  <button onclick="copyPix()">Copiar chave Pix</button>
-
-  <p style="margin-top:15px;font-size:14px;color:#ccc;">
-    Após o pagamento, envie o comprovante junto com seu nick para o admin.
+  <p style="font-size:14px;color:#ccc">
+    Após o pagamento, aguarde a confirmação do administrador.
   </p>
 </div>
 
 <script>
-  const data = JSON.parse(localStorage.getItem('payment'));
+const order = JSON.parse(localStorage.getItem("payment"));
+const confirmedId = localStorage.getItem("paymentConfirmed");
 
-  if(data){
-    document.getElementById('item').innerText = 'Item: ' + data.item;
-    document.getElementById('nick').innerText = 'Nick: ' + data.nick;
-    document.getElementById('pixKey').innerText = data.chave;
-  }
+if(!order){
+  document.getElementById("paymentBox").innerHTML = "<p>Pedido não encontrado.</p>";
+}else{
+  document.getElementById("item").innerText = "Item: " + order.item;
+  document.getElementById("nick").innerText = "Nick: " + order.nick;
+  document.getElementById("pixKey").innerText = "SUA-CHAVE-PIX-AQUI";
+}
 
-  function copyPix(){
-    navigator.clipboard.writeText(document.getElementById('pixKey').innerText);
-    alert('Chave Pix copiada!');
-  }
+if(order && confirmedId == order.id){
+  document.getElementById("paymentBox").innerHTML = `
+    <h2 class="success">✅ Pagamento realizado!</h2>
+    <p>Entre no servidor <strong>Multi Craft</strong></p>
+    <p>para receber seus equipamentos.</p>
+  `;
+}
 </script>
 
 </body>
