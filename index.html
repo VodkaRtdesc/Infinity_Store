@@ -6,18 +6,17 @@
 <style>
 body{margin:0;font-family:Arial;background:#1e1e1e;color:#fff}
 header{background:#2b2b2b;padding:20px;text-align:center;font-size:28px}
-.container{max-width:1000px;margin:auto;padding:20px}
+.container{max-width:1100px;margin:auto;padding:20px}
 .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
 .card{background:#2f2f2f;padding:20px;border-radius:10px}
-.price{color:#00ff88;font-size:22px}
+.price{color:#00ff88;font-size:20px}
 input,button{width:100%;padding:8px;margin-top:8px;border-radius:5px;border:none}
-button{background:#00aa55;color:#fff;font-size:16px;cursor:pointer}
+button{background:#00aa55;color:#fff;font-size:15px;cursor:pointer}
 button:hover{background:#008844}
 footer{text-align:center;padding:20px;color:#aaa}
 #adminPanel{display:none;background:#111;padding:20px}
 .order{background:#222;padding:10px;margin-top:10px;border-radius:5px}
 .confirm{background:#0066ff;margin-top:5px}
-.old{color:#aaa;text-decoration:line-through}
 </style>
 </head>
 
@@ -27,45 +26,28 @@ footer{text-align:center;padding:20px;color:#aaa}
 
 <div class="container">
 
-<h2>VIPs</h2>
+<h2>Kits PvP / Utilidades</h2>
+
 <div class="items">
 
-<div class="card">
-  <h3>VIP</h3>
-  <p class="price">R$ 10,00</p>
-  <input id="nick-vip" placeholder="Nick do jogador">
-  <input id="coupon-vip" placeholder="Cupom (opcional)">
-  <button onclick="buy('VIP',10,'nick-vip','coupon-vip')">Comprar via Pix</button>
-</div>
-
-<div class="card">
-  <h3>VIP+</h3>
-  <p class="price">R$ 20,00</p>
-  <input id="nick-vipplus" placeholder="Nick do jogador">
-  <input id="coupon-vipplus" placeholder="Cupom (opcional)">
-  <button onclick="buy('VIP+',20,'nick-vipplus','coupon-vipplus')">Comprar via Pix</button>
-</div>
-
-</div>
-
-<h2 style="margin-top:40px">Kits PvP</h2>
-<div class="items">
-
-<div class="card">
-  <h3>Kit PvP Básico</h3>
-  <p class="price">R$ 5,00</p>
-  <input id="nick-kit1" placeholder="Nick do jogador">
-  <input id="coupon-kit1" placeholder="Cupom (opcional)">
-  <button onclick="buy('Kit PvP Básico',5,'nick-kit1','coupon-kit1')">Comprar via Pix</button>
-</div>
-
-<div class="card">
-  <h3>Kit PvP Pro</h3>
-  <p class="price">R$ 15,00</p>
-  <input id="nick-kit2" placeholder="Nick do jogador">
-  <input id="coupon-kit2" placeholder="Cupom (opcional)">
-  <button onclick="buy('Kit PvP Pro',15,'nick-kit2','coupon-kit2')">Comprar via Pix</button>
-</div>
+<!-- KITS -->
+<script>
+const kits = [
+  ["Kit Dima",2],
+  ["Kit Dima Lendário",8],
+  ["Kit Ninja",12],
+  ["Kit Sub Neve",10],
+  ["Kit Neve OP",20],
+  ["Kit God",15],
+  ["Kit PvP Trio",30],
+  ["Kit CPvP",5],
+  ["Kit Clavudo",12],
+  ["Kit Farm OP",25],
+  ["Kit Full Maça",20],
+  ["Kit Foguetes",8],
+  ["Kit I Love You",12]
+];
+</script>
 
 </div>
 </div>
@@ -86,24 +68,36 @@ footer{text-align:center;padding:20px;color:#aaa}
 <script>
 const ADMIN_PASSWORD = "MultiCraftStaff1235";
 
-// CUPONS AQUI 👇
+// CUPONS
 const COUPONS = {
   "BEMVINDO10": 10,
   "MULTI20": 20
 };
 
+// GERAR KITS NA TELA
+const itemsDiv = document.querySelector(".items");
+kits.forEach((k,i)=>{
+  itemsDiv.innerHTML += `
+    <div class="card">
+      <h3>${k[0]}</h3>
+      <p class="price">R$ ${k[1].toFixed(2)}</p>
+      <input id="nick${i}" placeholder="Nick do jogador">
+      <input id="coupon${i}" placeholder="Cupom (opcional)">
+      <button onclick="buy('${k[0]}',${k[1]},'nick${i}','coupon${i}')">
+        Comprar via Pix
+      </button>
+    </div>
+  `;
+});
+
 function buy(item, price, nickId, couponId){
   const nick = document.getElementById(nickId).value;
   let coupon = document.getElementById(couponId).value.toUpperCase();
 
-  if(!nick){ alert("Digite seu nick"); return; }
+  if(!nick){ alert("Digite o nick do jogador"); return; }
 
-  let discount = 0;
-  if(COUPONS[coupon]){
-    discount = COUPONS[coupon];
-  }
-
-  const finalPrice = price - (price * discount / 100);
+  let discount = COUPONS[coupon] || 0;
+  let finalPrice = price - (price * discount / 100);
 
   const orders = JSON.parse(localStorage.getItem("orders") || "[]");
 
@@ -114,7 +108,6 @@ function buy(item, price, nickId, couponId){
     price,
     finalPrice: finalPrice.toFixed(2),
     coupon: discount ? coupon : "Nenhum",
-    discount,
     date: new Date().toLocaleString(),
     confirmed: false
   };
@@ -146,16 +139,17 @@ function renderOrders(){
   orders.forEach((o,i)=>{
     if(o.confirmed) return;
 
-    const el = document.createElement("div");
-    el.className="order";
-    el.innerHTML = `
-      <strong>Item:</strong> ${o.item}<br>
-      <strong>Nick:</strong> ${o.nick}<br>
-      <strong>Valor:</strong> R$ ${o.finalPrice}<br>
-      <strong>Cupom:</strong> ${o.coupon}<br>
-      <button class="confirm" onclick="confirmOrder(${i})">Confirmar compra</button>
+    div.innerHTML += `
+      <div class="order">
+        <strong>Item:</strong> ${o.item}<br>
+        <strong>Nick:</strong> ${o.nick}<br>
+        <strong>Valor:</strong> R$ ${o.finalPrice}<br>
+        <strong>Cupom:</strong> ${o.coupon}<br>
+        <button class="confirm" onclick="confirmOrder(${i})">
+          Confirmar compra
+        </button>
+      </div>
     `;
-    div.appendChild(el);
   });
 }
 
