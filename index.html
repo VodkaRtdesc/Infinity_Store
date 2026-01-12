@@ -31,10 +31,6 @@
       background: #2f2f2f;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-    .card h3 {
-      margin-top: 0;
     }
     .price {
       font-size: 22px;
@@ -43,7 +39,7 @@
     input {
       width: 100%;
       padding: 8px;
-      margin-top: 10px;
+      margin-top: 8px;
       border-radius: 5px;
       border: none;
     }
@@ -67,6 +63,11 @@
       color: #aaa;
       font-size: 14px;
     }
+    #adminPanel {
+      display: none;
+      background: #111;
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
@@ -74,58 +75,61 @@
 <header>Multi Craft • Loja Oficial</header>
 
 <div class="container">
-  <h2>VIPS</h2>
+
+  <h2>VIPs</h2>
   <div class="items">
+
     <div class="card">
       <h3>VIP</h3>
-      <p>Acesso básico a comandos e benefícios.</p>
       <p class="price" id="price-vip">R$ 10,00</p>
-      <input type="text" placeholder="Nick do jogador" id="nick-vip">
-      <input type="text" placeholder="Cupom de desconto" oninput="applyCoupon(this, 'vip', 10)">
-      <button onclick="buy('VIP','nick-vip')">Comprar via Pix</button>
+      <input id="nick-vip" placeholder="Nick do jogador">
+      <input placeholder="Cupom de desconto" oninput="applyCoupon(this, 'vip', 10)">
+      <button onclick="buy('VIP', 'nick-vip')">Comprar via Pix</button>
     </div>
+
     <div class="card">
       <h3>VIP+</h3>
-      <p>Benefícios extras e destaque no servidor.</p>
       <p class="price" id="price-vipplus">R$ 20,00</p>
-      <input type="text" placeholder="Cupom de desconto" oninput="applyCoupon(this, 'vipplus', 20)">
-      <button onclick="buy('VIP+')">Comprar via Pix</button>
+      <input id="nick-vipplus" placeholder="Nick do jogador">
+      <input placeholder="Cupom de desconto" oninput="applyCoupon(this, 'vipplus', 20)">
+      <button onclick="buy('VIP+', 'nick-vipplus')">Comprar via Pix</button>
     </div>
+
   </div>
 
   <h2 style="margin-top:40px">Kits PvP</h2>
   <div class="items">
+
     <div class="card">
       <h3>Kit PvP Básico</h3>
-      <p>Espada, armadura e poções.</p>
       <p class="price" id="price-kit1">R$ 5,00</p>
-      <input type="text" placeholder="Cupom de desconto" oninput="applyCoupon(this, 'kit1', 5)">
-      <button onclick="buy('Kit PvP Básico')">Comprar via Pix</button>
+      <input id="nick-kit1" placeholder="Nick do jogador">
+      <input placeholder="Cupom de desconto" oninput="applyCoupon(this, 'kit1', 5)">
+      <button onclick="buy('Kit PvP Básico', 'nick-kit1')">Comprar via Pix</button>
     </div>
+
     <div class="card">
       <h3>Kit PvP Pro</h3>
-      <p>Equipamentos avançados para combate.</p>
       <p class="price" id="price-kit2">R$ 15,00</p>
-      <input type="text" placeholder="Cupom de desconto" oninput="applyCoupon(this, 'kit2', 15)">
-      <button onclick="buy('Kit PvP Pro')">Comprar via Pix</button>
+      <input id="nick-kit2" placeholder="Nick do jogador">
+      <input placeholder="Cupom de desconto" oninput="applyCoupon(this, 'kit2', 15)">
+      <button onclick="buy('Kit PvP Pro', 'nick-kit2')">Comprar via Pix</button>
     </div>
+
   </div>
 </div>
 
 <footer>
-  © 2026 Multi Craft • Pagamentos via Pix
+  © 2026 Multi Craft • Pagamentos via Pix  
   <br><br>
-  <button onclick="openAdmin()">Painel do Admin</button>
+  <button onclick="toggleAdmin()">Painel do Admin</button>
 </footer>
 
-<div id="adminPanel" style="display:none; background:#111; padding:20px;">
+<div id="adminPanel">
   <h2>Painel do Admin</h2>
-  <input type="password" id="adminPass" placeholder="Senha do admin">
+  <input id="adminPass" type="password" placeholder="Senha do admin">
   <button onclick="loginAdmin()">Entrar</button>
-  <div id="adminContent" style="display:none; margin-top:20px;">
-    <h3>Compras registradas</h3>
-    <ul id="orders"></ul>
-  </div>
+  <ul id="orders"></ul>
 </div>
 
 <script>
@@ -133,29 +137,43 @@
     'BEMVINDO10': 10
   };
 
-  function applyCoupon(input, id, originalPrice) {
-    const code = input.value.toUpperCase();
-    let price = originalPrice;
+  const adminPassword = "yunne1235_"; // MUDE ISSO
 
-    if (coupons[code]) {
-      price = originalPrice - (originalPrice * coupons[code] / 100);
+  function applyCoupon(input, id, price) {
+    let final = price;
+    if (coupons[input.value.toUpperCase()]) {
+      final = price - (price * coupons[input.value.toUpperCase()] / 100);
     }
-
-    document.getElementById('price-' + id).innerText = 'R$ ' + price.toFixed(2);
+    document.getElementById('price-' + id).innerText = 'R$ ' + final.toFixed(2);
   }
 
   function buy(item, nickId) {
-    const nick = document.getElementById(nickId)?.value || '';
-    if(!nick){ alert('Digite seu nick do Minecraft'); return; }
-    const paymentData = {
+    const nick = document.getElementById(nickId).value;
+    if (!nick) {
+      alert("Digite seu nick do Minecraft");
+      return;
+    }
+
+    localStorage.setItem("payment", JSON.stringify({
       item: item,
       nick: nick,
-      chave: '10099770164'
-    };
-    localStorage.setItem('payment', JSON.stringify(paymentData));
-    window.open('pagamento.html', '_blank');
-  } {
-    alert('Envie o comprovante do Pix e seu nick no Minecraft para o admin.\nItem: ' + item);
+      chave: "10099770164"
+    }));
+
+    window.open("pagamento.html", "_blank");
+  }
+
+  function toggleAdmin() {
+    document.getElementById("adminPanel").style.display = "block";
+  }
+
+  function loginAdmin() {
+    if (document.getElementById("adminPass").value === adminPassword) {
+      document.getElementById("orders").innerHTML =
+        "<li>Painel ativo (versão simples)</li>";
+    } else {
+      alert("Senha incorreta");
+    }
   }
 </script>
 
