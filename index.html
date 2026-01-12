@@ -144,7 +144,17 @@
     document.getElementById('price-' + id).innerText = 'R$ ' + price.toFixed(2);
   }
 
-  function buy(item) {
+  function buy(item, nickId) {
+    const nick = document.getElementById(nickId)?.value || '';
+    if(!nick){ alert('Digite seu nick do Minecraft'); return; }
+    const paymentData = {
+      item: item,
+      nick: nick,
+      chave: 'SUA-CHAVE-PIX-AQUI'
+    };
+    localStorage.setItem('payment', JSON.stringify(paymentData));
+    window.open('pagamento.html', '_blank');
+  } {
     alert('Envie o comprovante do Pix e seu nick no Minecraft para o admin.\nItem: ' + item);
   }
 </script>
