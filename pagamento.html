@@ -45,24 +45,26 @@ body{
 </div>
 
 <script>
-const payment = JSON.parse(localStorage.getItem("payment"));
-const confirmedId = localStorage.getItem("paymentConfirmed");
+function checkPayment(){
+  const payment = JSON.parse(localStorage.getItem("payment"));
+  const confirmedId = localStorage.getItem("paymentConfirmed");
 
-if(!payment){
-  document.getElementById("content").innerHTML =
-    "<p>Nenhuma compra encontrada.</p>";
+  if(!payment) return;
+
+  if(confirmedId && payment.id == confirmedId){
+    document.getElementById("content").innerHTML = `
+      <h2 class="success">✅ Pagamento realizado!</h2>
+      <p>Entre no servidor <strong>Multi Craft</strong></p>
+      <p>para receber seus equipamentos.</p>
+      <br>
+      <p><strong>Item:</strong> ${payment.item}</p>
+      <p><strong>Nick:</strong> ${payment.nick}</p>
+    `;
+  }
 }
 
-if(confirmedId && payment && payment.id == confirmedId){
-  document.getElementById("content").innerHTML = `
-    <h2 class="success">✅ Pagamento realizado!</h2>
-    <p>Entre no servidor <strong>Multi Craft</strong></p>
-    <p>para receber seus equipamentos.</p>
-    <br>
-    <p><strong>Item:</strong> ${payment.item}</p>
-    <p><strong>Nick:</strong> ${payment.nick}</p>
-  `;
-}
+// verifica a cada 1 segundo
+setInterval(checkPayment, 1000);
 </script>
 
 </body>
