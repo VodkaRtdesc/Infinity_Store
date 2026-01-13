@@ -19,6 +19,14 @@
       text-align: center;
     }
 
+    header a {
+      color: #00e676;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
     input {
       padding: 10px;
       width: 250px;
@@ -76,7 +84,12 @@
 <header>
   <h1>Multi Craft</h1>
   <p>Loja oficial de kits e VIPs</p>
+
   <input id="nick" placeholder="Nick do jogador">
+
+  <!-- BOTÃO ADMIN -->
+  <br>
+  <a href="admin.html" target="_blank">Painel Admin</a>
 </header>
 
 <div class="kits">
@@ -146,7 +159,8 @@ function comprarKit(nome, valor) {
   }
 
   const url =
-    "pagamentos.html?nick=" + encodeURIComponent(nick) +
+    "pagamentos.html" +
+    "?nick=" + encodeURIComponent(nick) +
     "&kit=" + encodeURIComponent(nome) +
     "&valor=" + encodeURIComponent(valor);
 
