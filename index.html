@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Mukti Craft Store</title>
+<title>Multi Craft - Loja</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -94,20 +94,32 @@ button {
   border-radius: 5px;
 }
 
-#pagamento, #admin {
+#pagamento {
   display: none;
-  padding: 20px;
+  padding: 30px;
+}
+
+#admin {
+  display: none;
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .box {
   background: #1e1e1e;
   padding: 20px;
   border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
 }
+
 .lista {
   background: #2a2a2a;
-  padding: 8px;
-  margin-top: 6px;
+  padding: 10px;
+  margin-top: 10px;
   border-radius: 5px;
 }
 </style>
@@ -121,10 +133,9 @@ button {
   <button onclick="abrirAdmin()">Painel Admin</button>
 </header>
 
-<!-- LOJA (ORDEM DO MENOR PARA O MAIOR) -->
+<!-- LOJA -->
 <div id="loja">
 
-<!-- R$2 -->
 <div class="kit">
   <img src="images/kit-dima.jpg">
   <h3>Kit Dima</h3>
@@ -134,7 +145,6 @@ button {
   <button onclick="comprar('Kit Dima',2,'nick1','cupom1')">Comprar</button>
 </div>
 
-<!-- R$5 -->
 <div class="kit">
   <img src="images/kit-cpvp.jpg">
   <h3>Kit CPVP</h3>
@@ -144,7 +154,6 @@ button {
   <button onclick="comprar('Kit CPVP',5,'nick2','cupom2')">Comprar</button>
 </div>
 
-<!-- R$8 -->
 <div class="kit">
   <img src="images/kit-dima-lendario.jpg">
   <h3>Kit Dima Lendário</h3>
@@ -154,7 +163,6 @@ button {
   <button onclick="comprar('Kit Dima Lendário',8,'nick3','cupom3')">Comprar</button>
 </div>
 
-<!-- R$12 -->
 <div class="kit">
   <img src="images/kit-ninja.jpg">
   <h3>Kit Ninja</h3>
@@ -164,7 +172,6 @@ button {
   <button onclick="comprar('Kit Ninja',12,'nick4','cupom4')">Comprar</button>
 </div>
 
-<!-- R$12 -->
 <div class="kit">
   <img src="images/kit-iloveyou.jpg">
   <h3>Kit I Love You</h3>
@@ -174,7 +181,6 @@ button {
   <button onclick="comprar('Kit I Love You',12,'nick5','cupom5')">Comprar</button>
 </div>
 
-<!-- R$15 -->
 <div class="kit">
   <img src="images/kit-god.jpg">
   <h3>Kit God</h3>
@@ -184,7 +190,6 @@ button {
   <button onclick="comprar('Kit God',15,'nick6','cupom6')">Comprar</button>
 </div>
 
-<!-- R$20 -->
 <div class="kit">
   <img src="images/kit-neve-op.jpg">
   <h3>Kit Neve OP</h3>
@@ -194,7 +199,6 @@ button {
   <button onclick="comprar('Kit Neve OP',20,'nick7','cupom7')">Comprar</button>
 </div>
 
-<!-- R$25 -->
 <div class="kit">
   <img src="images/kit-farm-op.jpg">
   <h3>Kit Farm OP</h3>
@@ -204,7 +208,6 @@ button {
   <button onclick="comprar('Kit Farm OP',25,'nick8','cupom8')">Comprar</button>
 </div>
 
-<!-- R$30 -->
 <div class="kit">
   <img src="images/kit-trio.jpg">
   <h3>Kit Trio</h3>
@@ -257,7 +260,7 @@ function comprar(kit, preco, nickId, cupomId) {
   let valor = preco;
   if (cupom === "BEMVINDO10") valor *= 0.9;
 
-  atual = { kit, nick, valor };
+  atual = { kit, nick, valor, status: "Pendente" };
 
   document.getElementById("loja").style.display = "none";
   document.getElementById("pagamento").style.display = "block";
@@ -268,13 +271,13 @@ function comprar(kit, preco, nickId, cupomId) {
 function confirmar() {
   compras.push(atual);
   document.getElementById("msg").innerText =
-    "✅ Pagamento realizado! Entre no servidor para receber os itens.";
+    "✅ Pagamento registrado! Aguarde confirmação do staff.";
 }
 
 function abrirAdmin() {
   document.getElementById("loja").style.display = "none";
   document.getElementById("pagamento").style.display = "none";
-  document.getElementById("admin").style.display = "block";
+  document.getElementById("admin").style.display = "flex";
 }
 
 function entrarAdmin() {
@@ -282,9 +285,38 @@ function entrarAdmin() {
     alert("Senha incorreta");
     return;
   }
+  renderCompras();
+}
 
-  document.getElementById("listaCompras").innerHTML =
-    compras.map(c => `<div class="lista">${c.nick} → ${c.kit} (R$${c.valor.toFixed(2)})</div>`).join("");
+function renderCompras() {
+  const lista = document.getElementById("listaCompras");
+
+  if (compras.length === 0) {
+    lista.innerHTML = "<p>Nenhuma compra ainda.</p>";
+    return;
+  }
+
+  lista.innerHTML = compras.map((c, i) => `
+    <div class="lista">
+      <b>${c.nick}</b> — ${c.kit}<br>
+      Valor: R$${c.valor.toFixed(2)}<br>
+      Status: <b>${c.status}</b><br><br>
+      <button onclick="aprovar(${i})">✅ Aprovar</button>
+      <button onclick="negar(${i})" style="background:#ff5555">❌ Negar</button>
+    </div>
+  `).join("");
+}
+
+function aprovar(i) {
+  compras[i].status = "Aprovada";
+  renderCompras();
+}
+
+function negar(i) {
+  if (confirm("Deseja negar esta compra?")) {
+    compras.splice(i, 1);
+    renderCompras();
+  }
 }
 
 function voltar() {
