@@ -2,48 +2,69 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Pagamento - MultiCraft</title>
+<title>Pagamento - Multi Craft</title>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
-body { font-family: Arial; background:#0f0f0f; color:white; text-align:center }
-.box { background:#1a1a1a; padding:20px; max-width:400px; margin:auto; border-radius:10px }
-input, select, button {
-  width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px;
+body {
+  background:#0f0f0f;
+  color:white;
+  font-family:Arial, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  margin:0;
 }
-button { background:#00c853; color:black; font-weight:bold; cursor:pointer }
+
+.box {
+  background:#1b1b1b;
+  padding:25px;
+  border-radius:12px;
+  width:100%;
+  max-width:420px;
+  text-align:center;
+}
+
+h2 { margin-top:0 }
+
+.info {
+  background:#111;
+  padding:10px;
+  border-radius:6px;
+  margin:10px 0;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:6px;
+  background:#00c853;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:15px;
+}
 </style>
 </head>
 
 <body>
+
 <div class="box">
-  <h2>Finalizar Compra</h2>
+  <h2>Pagamento via PIX</h2>
 
-  <input id="nick" placeholder="Nick no Minecraft">
+  <div class="info"><b>Nick:</b> <span id="nick"></span></div>
+  <div class="info"><b>Kit:</b> <span id="kit"></span></div>
+  <div class="info"><b>Valor:</b> R$ <span id="valor"></span></div>
 
-  <select id="kit">
-    <option value="Kit Dima - 2">Kit Dima - R$2</option>
-    <option value="Kit Dima Lendário - 8">Kit Dima Lendário - R$8</option>
-    <option value="Kit Ninja - 12">Kit Ninja - R$12</option>
-    <option value="Kit Sub Neve - 15">Kit Sub Neve - R$15</option>
-    <option value="Kit Neve OP - 20">Kit Neve OP - R$20</option>
-    <option value="Kit God - 15">Kit God - R$15</option>
-    <option value="Kit PVP - 10">Kit PVP - R$10</option>
-    <option value="Kit Trio - 30">Kit Trio - R$30</option>
-    <option value="Kit CPVP - 5">Kit CPVP - R$5</option>
-    <option value="Kit Clavudo - 12">Kit Clavudo - R$12</option>
-    <option value="Kit Farm OP - 25">Kit Farm OP - R$25</option>
-    <option value="Kit Full Maça - 20">Kit Full Maça - R$20</option>
-    <option value="Kit Foguetes - 8">Kit Foguetes - R$8</option>
-  </select>
+  <p>🔑 Chave PIX</p>
+  <h3>10099770164</h3>
 
-  <p>💠 Chave Pix:</p>
-  <b>10099770164</b>
+  <p>Aguarde a confirmação de um staff para receber seus itens.</p>
 
-  <p>Aguarde a confirmação de um staff.</p>
-
-  <button onclick="comprar()">Confirmar Compra</button>
+  <button onclick="confirmar()">Já paguei</button>
 </div>
 
 <script>
@@ -57,20 +78,35 @@ const firebaseConfig = {
   appId: "1:587079793250:web:21d3fb74ae55eb6f5eef3b"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.database();
+
+// pega dados da URL
+const params = new URLSearchParams(window.location.search);
+const nick = params.get("nick");
+const kit = params.get("kit");
+const valor = params.get("valor");
+
+document.getElementById("nick").innerText = nick || "-";
+document.getElementById("kit").innerText = kit || "-";
+document.getElementById("valor").innerText = valor || "-";
 
 const webhookPendente = "https://discord.com/api/webhooks/1460447479563682012/ZwXCxogPkp2EBYQGE7--VVY9OFS7Ma7-APSRoVQFM0JbCrQu-ufUkfwTMRwdtiXoZ";
 
-function comprar(){
-  const nick = document.getElementById("nick").value;
-  const kit = document.getElementById("kit").value;
-  if(!nick) return alert("Digite seu nick");
+function confirmar(){
+  if(!nick || !kit){
+    alert("Dados inválidos");
+    return;
+  }
 
   const id = Date.now();
 
-  db.ref("compras/"+id).set({
-    nick, kit,
+  db.ref("compras/" + id).set({
+    nick: nick,
+    kit: kit,
+    valor: valor,
     status: "pendente"
   });
 
@@ -79,18 +115,20 @@ function comprar(){
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
       embeds:[{
-        title:"🟡 Nova compra pendente",
+        title:"🟡 Compra pendente",
         color:16776960,
         fields:[
           {name:"Nick",value:nick,inline:true},
-          {name:"Kit",value:kit,inline:true}
+          {name:"Kit",value:kit,inline:true},
+          {name:"Valor",value:"R$ "+valor,inline:true}
         ]
       }]
     })
   });
 
-  alert("Compra enviada! Aguarde confirmação.");
+  alert("Pagamento enviado! Aguarde um staff.");
 }
 </script>
+
 </body>
 </html>
