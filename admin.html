@@ -1,72 +1,158 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel</title>
-  <style>
-    body {
-      background: #0e0e0e;
-      color: #fff;
-      font-family: Arial;
-      padding: 20px;
-    }
+  <meta charset="UTF-8" />
+  <title>Admin Panel - MultiCraft</title>
 
-    button {
-      padding: 10px;
-      margin: 5px;
-      font-weight: bold;
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    body{
+      background:#0e0e0e;
+      color:#fff;
+      font-family:Arial, sans-serif;
+      margin:0;
+      padding:20px;
     }
+    h2{ margin-top:0; }
+    .card{
+      background:#1c1c1c;
+      padding:15px;
+      border-radius:10px;
+      margin-top:10px;
+    }
+    .row{
+      background:#111;
+      padding:10px;
+      border-radius:8px;
+      margin-top:8px;
+      white-space:pre-wrap;
+    }
+    button{
+      padding:10px 12px;
+      border:none;
+      border-radius:8px;
+      font-weight:bold;
+      cursor:pointer;
+      margin-top:10px;
+      margin-right:8px;
+    }
+    .ok{ background:#00ff88; }
+    .no{ background:#d50000; color:#fff; }
+    .small{ color:#bbb; font-size:12px; }
+    hr{ border:0; border-top:1px solid #2a2a2a; margin:12px 0; }
   </style>
 </head>
 <body>
 
 <script>
-const senhaCorreta = "MultiCraftStaff1235";
-const senha = prompt("Senha do admin:");
-
-if (senha !== senhaCorreta) {
-  alert("Acesso negado");
-  window.location.href = "index.html";
-}
+  // ✅ senha simples (como você queria)
+  const senhaCorreta = "MultiCraftStaff1235";
+  const senha = prompt("Senha do admin:");
+  if (senha !== senhaCorreta) {
+    alert("Acesso negado");
+    window.location.href = "index.html";
+  }
 </script>
 
 <h2>🛠 Admin Panel</h2>
+<div class="small">Mostrando compras com status: <b>pendente</b></div>
 
-<div id="info"></div>
-
-<button onclick="confirmar()">Confirmar Compra</button>
-<button onclick="negar()">Negar Compra</button>
+<div id="lista" class="card">Carregando...</div>
 
 <script>
-const webhookPublico = "https://discord.com/api/webhooks/1460447774993551380/nEe0VkGTtJufe23fLoEDqEf3ZrOslMHFDmftPZVY59SLtdiiYEvhxwZju4l-GsjUcCjL";
+  // ✅ Firebase (seu config)
+  const firebaseConfig = {
+    apiKey: "AIzaSyASk1w8w6YzIQhkbJh7xv5BJb8ZHmG7MxM",
+    authDomain: "multicraft-ea978.firebaseapp.com",
+    databaseURL: "https://multicraft-ea978-default-rtdb.firebaseio.com",
+    projectId: "multicraft-ea978",
+    storageBucket: "multicraft-ea978.firebasestorage.app",
+    messagingSenderId: "587079793250",
+    appId: "1:587079793250:web:21d3fb74ae55eb6f5eef3b"
+  };
 
-const dados = JSON.parse(localStorage.getItem("compraPendente"));
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-document.getElementById("info").innerText =
-  "Nick: " + dados.nick +
-  " | Kit: " + dados.kit +
-  " | Valor: R$" + dados.valor;
+  // ✅ Webhook PÚBLICO (confirmado)
+  const webhookPublico = "https://discord.com/api/webhooks/1460447774993551380/nEe0VkGTtJufe23fLoEDqEf3ZrOslMHFDmftPZVY59SLtdiiYEvhxwZju4l-GsjUcCjL";
 
-function confirmar() {
-  fetch(webhookPublico, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content:
-        "✅ **COMPRA APROVADA**\n" +
-        "👤 Nick: " + dados.nick + "\n" +
-        "📦 Kit: " + dados.kit
-    })
+  const lista = document.getElementById("lista");
+
+  // ✅ lê compras pendentes de TODOS os dispositivos
+  db.ref("compras").on("value", (snap) => {
+    lista.innerHTML = "";
+
+    if (!snap.exists()) {
+      lista.textContent = "Nenhuma compra encontrada.";
+      return;
+    }
+
+    const pendentes = [];
+
+    snap.forEach((child) => {
+      const c = child.val();
+      if (c && c.status === "pendente") {
+        pendentes.push({ id: child.key, ...c });
+      }
+    });
+
+    // ordena por mais recente primeiro
+    pendentes.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+
+    if (pendentes.length === 0) {
+      lista.textContent = "Nenhuma compra pendente.";
+      return;
+    }
+
+    pendentes.forEach((c) => {
+      const div = document.createElement("div");
+      div.className = "row";
+      div.textContent =
+        "🆔 ID: " + c.id + "\n" +
+        "👤 Nick: " + (c.nick || "-") + "\n" +
+        "📦 Kit: " + (c.kit || "-") + "\n" +
+        "💰 Valor: R$" + (c.valor || "-") + "\n" +
+        "⏱ Data: " + new Date(c.createdAt || Date.now()).toLocaleString();
+
+      const btnOk = document.createElement("button");
+      btnOk.className = "ok";
+      btnOk.textContent = "Confirmar";
+      btnOk.onclick = () => confirmar(c.id, c);
+
+      const btnNo = document.createElement("button");
+      btnNo.className = "no";
+      btnNo.textContent = "Negar";
+      btnNo.onclick = () => negar(c.id);
+
+      lista.appendChild(div);
+      lista.appendChild(btnOk);
+      lista.appendChild(btnNo);
+      lista.appendChild(document.createElement("hr"));
+    });
   });
 
-  alert("Compra confirmada!");
-  localStorage.removeItem("compraPendente");
-}
+  function confirmar(id, c) {
+    db.ref("compras/" + id).update({ status: "confirmado", decidedAt: Date.now() });
 
-function negar() {
-  alert("Compra negada!");
-  localStorage.removeItem("compraPendente");
-}
+    fetch(webhookPublico, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content:
+          "✅ **COMPRA CONFIRMADA**\n" +
+          "👤 Nick: " + (c.nick || "-") + "\n" +
+          "📦 Kit: " + (c.kit || "-") + "\n" +
+          "💰 Valor: R$" + (c.valor || "-")
+      })
+    }).catch(()=>{});
+  }
+
+  function negar(id) {
+    db.ref("compras/" + id).update({ status: "negado", decidedAt: Date.now() });
+  }
 </script>
 
 </body>
