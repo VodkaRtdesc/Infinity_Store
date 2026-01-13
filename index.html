@@ -2,15 +2,25 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Multi Craft - Loja Oficial</title>
+<title>Multi Craft - Loja</title>
 
 <style>
-html, body {
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: auto;
+}
+
+body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
   background: #111;
   color: #fff;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 header {
@@ -69,29 +79,13 @@ button {
 
 .comps {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-top: 10px;
 }
 
 .comps img {
   width: 32%;
   border-radius: 6px;
-}
-
-.pagamento {
-  display: none;
-  padding: 30px;
-  text-align: center;
-}
-
-.pagamento.active {
-  display: block;
-}
-
-.confirmado {
-  color: #00ff88;
-  font-size: 20px;
-  margin-top: 20px;
 }
 </style>
 </head>
@@ -100,77 +94,61 @@ button {
 
 <header>
   <h1>Multi Craft</h1>
-  <p>Loja oficial do servidor</p>
+  <p>Loja oficial</p>
 </header>
 
 <div class="container">
 
-<!-- KIT DIMA -->
 <div class="kit">
   <img src="images/kit-dima.jpg">
   <h2>Kit Dima</h2>
   <p class="preco">R$2,00</p>
-  <input id="nick-dima" placeholder="Nick do jogador">
-  <button onclick="comprar('Kit Dima', 2, 'nick-dima')">Comprar</button>
 </div>
 
-<!-- KIT TRIO -->
 <div class="kit">
   <img src="images/kit-trio.jpg">
   <h2>Kit Trio</h2>
-  <p class="preco">R$30,00</p>
   <div class="comps">
     <img src="images/comp-kit-trio.jpg">
     <img src="images/comp-kit-trio1.jpg">
     <img src="images/comp-kit-trio2.jpg">
   </div>
-  <input id="nick-trio" placeholder="Nick do jogador">
-  <button onclick="comprar('Kit Trio', 30, 'nick-trio')">Comprar</button>
 </div>
 
-<!-- KIT CPVP -->
 <div class="kit">
   <img src="images/kit-cpvp.jpg">
   <h2>Kit CPVP</h2>
-  <p class="preco">R$5,00</p>
-  <input id="nick-cpvp" placeholder="Nick do jogador">
-  <button onclick="comprar('Kit CPVP', 5, 'nick-cpvp')">Comprar</button>
 </div>
 
-<!-- KIT FARM OP -->
 <div class="kit">
   <img src="images/kit-farm-op.jpg">
   <h2>Kit Farm OP</h2>
-  <p class="preco">R$25,00</p>
-  <input id="nick-farm" placeholder="Nick do jogador">
-  <button onclick="comprar('Kit Farm OP', 25, 'nick-farm')">Comprar</button>
+</div>
+
+<div class="kit">
+  <img src="images/kit-neve-op.jpg">
+  <h2>Kit Neve OP</h2>
+</div>
+
+<div class="kit">
+  <img src="images/kit-sub-neve.jpg">
+  <h2>Kit Sub Neve</h2>
+</div>
+
+<div class="kit">
+  <img src="images/kit-god-pvp.jpg">
+  <h2>Kit God PVP</h2>
+</div>
+
+<div class="kit">
+  <img src="images/kit-duo.jpg">
+  <h2>Kit Duo</h2>
+  <div class="comps">
+    <img src="images/comp-kit-duo.jpg">
+  </div>
 </div>
 
 </div>
-
-<div class="pagamento" id="pagamento">
-  <h2>Pagamento via PIX</h2>
-  <p>Chave PIX: <b>SEU_PIX_AQUI</b></p>
-  <button onclick="confirmarPagamento()">Confirmar pagamento</button>
-  <div class="confirmado" id="confirmado"></div>
-</div>
-
-<script>
-function comprar(kit, preco, nickId) {
-  const nick = document.getElementById(nickId).value;
-  if (!nick) {
-    alert("Digite o nick");
-    return;
-  }
-  document.querySelector('.container').style.display = 'none';
-  document.getElementById('pagamento').classList.add('active');
-}
-
-function confirmarPagamento() {
-  document.getElementById('confirmado').innerText =
-    "Pagamento realizado! Entre no servidor para receber seus equipamentos.";
-}
-</script>
 
 </body>
 </html>
