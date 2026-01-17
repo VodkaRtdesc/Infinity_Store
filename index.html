@@ -1,191 +1,42 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Loja MultiCraft</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0e0e0e;
-  color: #fff;
-  min-height: 100vh;
-  overflow-y: auto;
-}
-
-header {
-  background: #1c1c1c;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 22px;
-}
-
-header a {
-  color: #00ff88;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.container {
-  padding: 20px;
-}
-
-.kits {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.kit {
-  background: #1c1c1c;
-  border-radius: 10px;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-}
-
-.kit img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 6px;
-  background: #000;
-}
-
-.kit h3 {
-  margin: 10px 0 5px;
-}
-
-.kit p {
-  margin: 0 0 10px;
-}
-
-.kit button {
-  margin-top: auto;
-  padding: 10px;
-  border: none;
-  background: #00ff88;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 5px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Infinity Craft • Loja</title>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
-
 <body>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <div style="font-weight:900;font-size:18px">Infinity Craft</div>
+        <div class="small">Loja oficial do servidor</div>
+      </div>
+      <div class="row">
+        <span class="badge">Bedrock • Semi Anarquia</span>
+        <a class="btn btn-ghost" href="https://discord.gg/kJVefNZn6m" target="_blank">Discord</a>
+        <a class="btn btn-ghost" href="admin.html">Admin</a>
+      </div>
+    </div>
 
-<header>
-  <h1>🛒 Loja MultiCraft</h1>
-  <a href="admin.html">Admin Panel</a>
-</header>
+    <section class="hero">
+      <img src="https://cdn.discordapp.com/attachments/1441242242395410445/1461754789778948208/4_Sem_Titulo_20260116123209.png?ex=696bb4bb&is=696a633b&hm=e110c366fb7a9427db1d788535847e69f9280fcc55271a0226a09a422660fa50&" alt="Infinity banner">
+      <h1>Compre kits e apoie o servidor</h1>
+      <p>Escolha um kit, informe seu nick e Discord, pague no PIX e aguarde o staff aceitar.</p>
+    </section>
 
-<div class="container">
-<div class="kits">
+    <section style="margin-top:14px">
+      <div class="row">
+        <h2 style="margin:0">Kits</h2>
+        <span class="badge" id="kitCount">Carregando…</span>
+      </div>
+      <div class="grid" id="kitsGrid"></div>
+    </section>
 
-<!-- 2 -->
-<div class="kit">
-  <img src="imagens/kit-dima.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit Dima</h3>
-  <p>R$ 2,00</p>
-  <button onclick="comprar('Kit Dima', 2)">Comprar</button>
-</div>
+    <footer>© Infinity Craft • Loja</footer>
+  </div>
 
-<!-- 5 -->
-<div class="kit">
-  <img src="imagens/kit-cpvp.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit CPVP</h3>
-  <p>R$ 5,00</p>
-  <button onclick="comprar('Kit CPVP', 5)">Comprar</button>
-</div>
-
-<!-- 8 -->
-<div class="kit">
-  <img src="imagens/kit-dima-lendario.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit Dima Lendário</h3>
-  <p>R$ 8,00</p>
-  <button onclick="comprar('Kit Dima Lendário', 8)">Comprar</button>
-</div>
-
-<!-- 12 -->
-<div class="kit">
-  <img src="imagens/kit-ninja.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit Ninja</h3>
-  <p>R$ 12,00</p>
-  <button onclick="comprar('Kit Ninja', 12)">Comprar</button>
-</div>
-
-<!-- 12 -->
-<div class="kit">
-  <img src="imagens/kit-clavudo.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit Clavudo</h3>
-  <p>R$ 12,00</p>
-  <button onclick="comprar('Kit Clavudo', 12)">Comprar</button>
-</div>
-
-<!-- 15 -->
-<div class="kit">
-  <img src="imagens/kit-god.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit God</h3>
-  <p>R$ 15,00</p>
-  <button onclick="comprar('Kit God', 15)">Comprar</button>
-</div>
-
-<!-- 20 -->
-<div class="kit">
-  <img src="imagens/kit-neve-op.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit Neve OP</h3>
-  <p>R$ 20,00</p>
-  <button onclick="comprar('Kit Neve OP', 20)">Comprar</button>
-</div>
-
-<!-- 20 -->
-<div class="kit">
-  <img src="imagens/kit-full-maca.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit Full Maça</h3>
-  <p>R$ 20,00</p>
-  <button onclick="comprar('Kit Full Maça', 20)">Comprar</button>
-</div>
-
-<!-- 25 -->
-<div class="kit">
-  <img src="imagens/kit-farm-op.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit Farm OP</h3>
-  <p>R$ 25,00</p>
-  <button onclick="comprar('Kit Farm OP', 25)">Comprar</button>
-</div>
-
-<!-- 30 -->
-<div class="kit">
-  <img src="imagens/kit-trio.jpg" onerror="this.src='imagens/placeholder.jpg'">
-  <h3>Kit Trio</h3>
-  <p>R$ 30,00</p>
-  <button onclick="comprar('Kit Trio', 30)">Comprar</button>
-</div>
-
-</div>
-</div>
-
-<script>
-function comprar(kit, valor) {
-  localStorage.setItem("kit", kit);
-  localStorage.setItem("valor", valor);
-  window.open("pagamentos.html", "_blank");
-}
-</script>
-
+  <script type="module" src="assets/app.js"></script>
 </body>
 </html>
