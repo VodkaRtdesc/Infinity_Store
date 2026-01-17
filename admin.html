@@ -1,159 +1,162 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Panel - MultiCraft</title>
-
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-  <style>
-    body{
-      background:#0e0e0e;
-      color:#fff;
-      font-family:Arial, sans-serif;
-      margin:0;
-      padding:20px;
-    }
-    h2{ margin-top:0; }
-    .card{
-      background:#1c1c1c;
-      padding:15px;
-      border-radius:10px;
-      margin-top:10px;
-    }
-    .row{
-      background:#111;
-      padding:10px;
-      border-radius:8px;
-      margin-top:8px;
-      white-space:pre-wrap;
-    }
-    button{
-      padding:10px 12px;
-      border:none;
-      border-radius:8px;
-      font-weight:bold;
-      cursor:pointer;
-      margin-top:10px;
-      margin-right:8px;
-    }
-    .ok{ background:#00ff88; }
-    .no{ background:#d50000; color:#fff; }
-    .small{ color:#bbb; font-size:12px; }
-    hr{ border:0; border-top:1px solid #2a2a2a; margin:12px 0; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Infinity Craft • Admin</title>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <div style="font-weight:900;font-size:18px">Infinity Craft</div>
+        <div class="small">Admin Panel (Supabase)</div>
+      </div>
+      <div class="row">
+        <a class="btn btn-ghost" href="index.html">Voltar</a>
+        <button class="btn btn-ghost hidden" id="btnLogout">Sair</button>
+      </div>
+    </div>
 
-<script>
-  // ✅ senha simples (como você queria)
-  const senhaCorreta = "MultiCraftStaff1235";
-  const senha = prompt("Senha do admin:");
-  if (senha !== senhaCorreta) {
-    alert("Acesso negado");
-    window.location.href = "index.html";
-  }
-</script>
+    <section class="card" id="loginCard">
+      <h2 style="margin:0">Entrar</h2>
+      <div class="small">Login por email/senha do Supabase Auth.</div>
+      <div class="hr"></div>
 
-<h2>🛠 Admin Panel</h2>
-<div class="small">Mostrando compras com status: <b>pendente</b></div>
+      <div class="label">Email</div>
+      <input id="email" class="input" value="diogojoaquimdemelosantana@gmail.com">
 
-<div id="lista" class="card">Carregando...</div>
+      <div class="label">Senha</div>
+      <input id="password" class="input" type="password" placeholder="••••••••">
 
-<script>
-  // ✅ Firebase (seu config)
-  const firebaseConfig = {
-    apiKey: "AIzaSyASk1w8w6YzIQhkbJh7xv5BJb8ZHmG7MxM",
-    authDomain: "multicraft-ea978.firebaseapp.com",
-    databaseURL: "https://multicraft-ea978-default-rtdb.firebaseio.com",
-    projectId: "multicraft-ea978",
-    storageBucket: "multicraft-ea978.firebasestorage.app",
-    messagingSenderId: "587079793250",
-    appId: "1:587079793250:web:21d3fb74ae55eb6f5eef3b"
-  };
+      <div class="hr"></div>
+      <div class="row">
+        <button class="btn" id="btnLogin">Entrar</button>
+        <div class="small" id="loginMsg"></div>
+      </div>
+    </section>
 
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+    <section id="dash" class="hidden">
+      <div class="card" style="margin-top:14px">
+        <div class="row">
+          <h2 style="margin:0">Config PIX</h2>
+          <span class="badge" id="adminEmail">—</span>
+        </div>
+        <div class="hr"></div>
 
-  // ✅ Webhook PÚBLICO (confirmado)
-  const webhookPublico = "https://discord.com/api/webhooks/1460447774993551380/nEe0VkGTtJufe23fLoEDqEf3ZrOslMHFDmftPZVY59SLtdiiYEvhxwZju4l-GsjUcCjL";
+        <div class="label">Chave PIX</div>
+        <input id="pixKey" class="input" placeholder="Sua chave PIX">
 
-  const lista = document.getElementById("lista");
+        <div class="label">Mensagem</div>
+        <textarea id="pixMessage" class="input"></textarea>
 
-  // ✅ lê compras pendentes de TODOS os dispositivos
-  db.ref("compras").on("value", (snap) => {
-    lista.innerHTML = "";
+        <div class="hr"></div>
+        <div class="row">
+          <button class="btn" id="btnSaveSettings">Salvar</button>
+          <div class="small" id="settingsMsg"></div>
+        </div>
+      </div>
 
-    if (!snap.exists()) {
-      lista.textContent = "Nenhuma compra encontrada.";
-      return;
-    }
+      <div class="card" style="margin-top:14px">
+        <div class="row">
+          <h2 style="margin:0">Kits</h2>
+          <button class="btn" id="btnNewKit">Novo Kit</button>
+        </div>
+        <div id="kitForm" class="hidden" style="margin-top:12px">
+          <div class="hr"></div>
+          <input id="kitId" class="input hidden">
+          <div class="label">Nome</div>
+          <input id="kitName" class="input">
+          <div class="label">Preço (R$)</div>
+          <input id="kitPrice" class="input" type="number" step="0.01">
+          <div class="label">Foto (URL)</div>
+          <input id="kitImage" class="input" placeholder="https://...png">
+          <div class="label">Descrição</div>
+          <textarea id="kitDesc" class="input"></textarea>
+          <div class="label">Ativo?</div>
+          <select id="kitActive">
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+          <div class="hr"></div>
+          <div class="row">
+            <button class="btn" id="btnSaveKit">Salvar</button>
+            <button class="btn btn-ghost" id="btnCancelKit">Cancelar</button>
+            <button class="btn btn-ghost" id="btnDeleteKit">Excluir</button>
+            <div class="small" id="kitMsg"></div>
+          </div>
+        </div>
 
-    const pendentes = [];
+        <div class="hr"></div>
+        <table class="table">
+          <thead><tr><th>Nome</th><th>Preço</th><th>Ativo</th><th>Ações</th></tr></thead>
+          <tbody id="kitsTbody"></tbody>
+        </table>
+      </div>
 
-    snap.forEach((child) => {
-      const c = child.val();
-      if (c && c.status === "pendente") {
-        pendentes.push({ id: child.key, ...c });
-      }
-    });
+      <div class="card" style="margin-top:14px">
+        <div class="row">
+          <h2 style="margin:0">Cupons</h2>
+          <button class="btn" id="btnNewCoupon">Novo Cupom</button>
+        </div>
 
-    // ordena por mais recente primeiro
-    pendentes.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+        <div id="couponForm" class="hidden" style="margin-top:12px">
+          <div class="hr"></div>
+          <input id="couponId" class="input hidden">
+          <div class="label">Código</div>
+          <input id="couponCode" class="input" placeholder="INFINITY10">
+          <div class="label">Tipo</div>
+          <select id="couponType">
+            <option value="percent">Percentual (%)</option>
+            <option value="fixed">Valor fixo (R$)</option>
+          </select>
+          <div class="label">Valor</div>
+          <input id="couponValue" class="input" type="number" step="0.01">
+          <div class="label">Mínimo (R$)</div>
+          <input id="couponMin" class="input" type="number" step="0.01">
+          <div class="label">Máximo de usos</div>
+          <input id="couponMax" class="input" type="number" step="1">
+          <div class="label">Expira em (opcional)</div>
+          <input id="couponExpire" class="input" type="date">
+          <div class="label">Ativo?</div>
+          <select id="couponActive">
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
 
-    if (pendentes.length === 0) {
-      lista.textContent = "Nenhuma compra pendente.";
-      return;
-    }
+          <div class="hr"></div>
+          <div class="row">
+            <button class="btn" id="btnSaveCoupon">Salvar</button>
+            <button class="btn btn-ghost" id="btnCancelCoupon">Cancelar</button>
+            <button class="btn btn-ghost" id="btnDeleteCoupon">Excluir</button>
+            <div class="small" id="couponMsg"></div>
+          </div>
+        </div>
 
-    pendentes.forEach((c) => {
-      const div = document.createElement("div");
-      div.className = "row";
-      div.textContent =
-        "🆔 ID: " + c.id + "\n" +
-        "👤 Nick: " + (c.nick || "-") + "\n" +
-        "📦 Kit: " + (c.kit || "-") + "\n" +
-        "💰 Valor: R$" + (c.valor || "-") + "\n" +
-        "⏱ Data: " + new Date(c.createdAt || Date.now()).toLocaleString();
+        <div class="hr"></div>
+        <table class="table">
+          <thead><tr><th>Código</th><th>Tipo</th><th>Valor</th><th>Ativo</th><th>Ações</th></tr></thead>
+          <tbody id="couponsTbody"></tbody>
+        </table>
+      </div>
 
-      const btnOk = document.createElement("button");
-      btnOk.className = "ok";
-      btnOk.textContent = "Confirmar";
-      btnOk.onclick = () => confirmar(c.id, c);
+      <div class="card" style="margin-top:14px">
+        <div class="row">
+          <h2 style="margin:0">Pedidos</h2>
+          <button class="btn btn-ghost" id="btnRefreshOrders">Atualizar</button>
+        </div>
+        <div class="hr"></div>
+        <table class="table">
+          <thead><tr><th>Data</th><th>Player</th><th>Discord</th><th>Kit</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="ordersTbody"></tbody>
+        </table>
+      </div>
 
-      const btnNo = document.createElement("button");
-      btnNo.className = "no";
-      btnNo.textContent = "Negar";
-      btnNo.onclick = () => negar(c.id);
+      <footer>© Infinity Craft • Admin</footer>
+    </section>
+  </div>
 
-      lista.appendChild(div);
-      lista.appendChild(btnOk);
-      lista.appendChild(btnNo);
-      lista.appendChild(document.createElement("hr"));
-    });
-  });
-
-  function confirmar(id, c) {
-    db.ref("compras/" + id).update({ status: "confirmado", decidedAt: Date.now() });
-
-    fetch(webhookPublico, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content:
-          "✅ **COMPRA CONFIRMADA**\n" +
-          "👤 Nick: " + (c.nick || "-") + "\n" +
-          "📦 Kit: " + (c.kit || "-") + "\n" +
-          "💰 Valor: R$" + (c.valor || "-")
-      })
-    }).catch(()=>{});
-  }
-
-  function negar(id) {
-    db.ref("compras/" + id).update({ status: "negado", decidedAt: Date.now() });
-  }
-</script>
-
+  <script type="module" src="assets/admin.js"></script>
 </body>
 </html>
